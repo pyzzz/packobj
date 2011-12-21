@@ -1,0 +1,27 @@
+A python library use to pack object to string and unpack string to object.
+Use for packet or savedata usually.
+packobj can pack and unpack these object:
+int
+long
+float
+dict
+list
+tuple
+unicode
+str
+
+sample:
+
+for packobj import pack_obj, unpack_obj
+s = pack_obj({"string": "abc",
+			"int": 123,
+			"long": -123L,
+			"float": 1.01,
+			"unicode": u"abcde",
+			"dict": {"dict_int": -123,
+					"dict_string": "zzz",
+					},
+			"list": [10, 100, (101, 1)],
+			})
+print s.encode("hex")
+print unpack_obj(s)[1]
