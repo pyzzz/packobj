@@ -15,6 +15,7 @@ TYPE_UNICODE = "\x41"		#string
 TYPE_DICT = "\x50"			#dict
 TYPE_LIST = "\x51"			#list
 TYPE_TUPLE = "\x52"			#tuple
+TYPE_BOOL = "\x53"			#bool
 
 def _str(s):
 	if type(s) == str:			return s
@@ -93,6 +94,8 @@ def pack_obj(obj):
 	elif obj_type == dict:		return pack_dict(obj)
 	elif obj_type == list:		return pack_list(obj)
 	elif obj_type == tuple:		return pack_list(obj, True)
+	elif obj_type == bool:
+		return TYPE_BOOL + struct.pack(">B", (obj and 1 or 0))
 	elif obj_type == unicode:
 		obj = _str(obj)
 		return TYPE_UNICODE + pack_obj(len(obj)) + obj
@@ -115,6 +118,8 @@ def unpack_obj(s, i=0):
 	elif obj_type == TYPE_DICT:		return unpack_dict(s, i)
 	elif obj_type == TYPE_LIST:		return unpack_list(s, i)
 	elif obj_type == TYPE_TUPLE:		return unpack_list(s, i, True)
+	elif obj_type == TYPE_BOOL:
+		return (2, (struct.unpack(">B", s[i+1])[0] and True or False))
 	elif obj_type == TYPE_UNICODE:
 		llen, vlen = unpack_obj(s, i+1)
 		return (1+llen+vlen, _unicode(s[i+1+llen:i+1+llen+vlen]))
@@ -133,7 +138,7 @@ if __name__ == "__main__":
 				"dict": {"dict_int": -123,
 						"dict_string": "zzz",
 						},
-				"list": [10, 100, (101, 1)],
+				"list": [10, 100, (101, True)],
 				})
 	print s.encode("hex")
 	print unpack_obj(s)[1]
